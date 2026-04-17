@@ -1,15 +1,18 @@
 import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import usePerformance from '../hooks/usePerformance';
 
 export default function AsteroidBelt({ count = 1200, radiusMin = 13, radiusMax = 22 }) {
   const meshRef = useRef();
+  const perfConfig = usePerformance((s) => s.config);
+  const scaledCount = Math.floor(count * perfConfig.asteroidMultiplier);
 
   // Create random positions, rotations, and scales for each asteroid
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const particles = useMemo(() => {
     const temp = [];
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < scaledCount; i++) {
         // Random angle and distance within the belt
         const angle = Math.random() * Math.PI * 2;
         // Distribute density more towards the middle of the belt
@@ -39,7 +42,7 @@ export default function AsteroidBelt({ count = 1200, radiusMin = 13, radiusMax =
         });
     }
     return temp;
-  }, [count, radiusMin, radiusMax]);
+  }, [scaledCount, radiusMin, radiusMax]);
 
   useFrame((state) => {
     const time = state.clock.elapsedTime;
@@ -50,8 +53,10 @@ export default function AsteroidBelt({ count = 1200, radiusMin = 13, radiusMax =
         particle.position.x = Math.cos(currentAngle) * particle.radius;
         particle.position.z = Math.sin(currentAngle) * particle.radius;
         
-        // Add slight bobbing
-        particle.position.y = particle.yOffset + Math.sin(time * 0.5 + i) * 0.2;
+        // Add slight bobbing (skip on low tier for performance)
+        if (perfConfig.asteroidMultiplier > 0.25) {
+          particle.position.y = particle.yOffset + Math.sin(time * 0.5 + i) * 0.2;
+        }
 
         dummy.position.copy(particle.position);
         
@@ -69,7 +74,7 @@ export default function AsteroidBelt({ count = 1200, radiusMin = 13, radiusMax =
   });
 
   return (
-    <instancedMesh ref={meshRef} args={[null, null, count]} castShadow receiveShadow>
+    <instancedMesh ref={meshRef} args={[null, null, scaledCount]} castShadow receiveShadow>
       <dodecahedronGeometry args={[1, 0]} />
       <meshStandardMaterial
         color="#2a2a35"

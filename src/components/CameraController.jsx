@@ -3,8 +3,9 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import useNodeStore from '../hooks/useNodeStore';
-import { GALAXIES, SCHOOL_NODES, COLLEGE_NODES } from '../data/nodes';
+import { GALAXIES, SCHOOL_NODES, COLLEGE_NODES, GALAXY_REFS } from '../data/nodes';
 import { CAMERA_DEFAULTS, CAMERA_FOCUS_OFFSET, CAMERA_LERP_SPEED, AUTO_ROTATE_SPEED } from '../utils/constants';
+import usePerformance from '../hooks/usePerformance';
 
 const targetPos = new THREE.Vector3();
 const targetLookAt = new THREE.Vector3();
@@ -24,6 +25,7 @@ export default function CameraController() {
   const followingNode = useRef(null);
   
   const userInteracting = useRef(false);
+  const isMobile = usePerformance((s) => s.isMobile);
 
   // Track continuous target coordinates
   const universeCamPos = new THREE.Vector3(0, 80, 260);
@@ -53,11 +55,14 @@ export default function CameraController() {
       followingNode.current = null;
       
       if (activeGalaxy) {
-        // Look at specific galaxy
-        const gal = GALAXIES.find((g) => g.id === activeGalaxy);
-        if (gal) {
-           targetPos.set(gal.position[0] + CAMERA_DEFAULTS.position[0], gal.position[1] + CAMERA_DEFAULTS.position[1], gal.position[2] + CAMERA_DEFAULTS.position[2]);
-           targetLookAt.set(...gal.position);
+        // Look at specific galaxy using realtime world-matrix position calculation
+        const galRef = GALAXY_REFS[activeGalaxy];
+        if (galRef) {
+           const worldPos = new THREE.Vector3();
+           galRef.getWorldPosition(worldPos);
+           
+           targetPos.set(worldPos.x + CAMERA_DEFAULTS.position[0], worldPos.y + CAMERA_DEFAULTS.position[1], worldPos.z + CAMERA_DEFAULTS.position[2]);
+           targetLookAt.copy(worldPos);
         }
       } else {
         // Universe Overview
@@ -104,12 +109,16 @@ export default function CameraController() {
       autoRotate={!activeNode && activeGalaxy !== null}
       autoRotateSpeed={AUTO_ROTATE_SPEED}
       maxDistance={activeGalaxy ? 130 : 550}
-      minDistance={activeGalaxy ? 6 : 100}
-      maxPolarAngle={Math.PI * 0.5} // Allow going down to equator but not below negative-Y
-      minPolarAngle={0}             // Allow looking straight down
-      dampingFactor={0.05}
+      minDistance={activeGalaxy ? (isMobile ? 10 : 6) : (isMobile ? 40 : 25)}
+      maxPolarAngle={Math.PI * 0.5}
+      minPolarAngle={0}
+      dampingFactor={isMobile ? 0.08 : 0.05}
       enableDamping
       makeDefault
+      touches={{
+        ONE: THREE.TOUCH.ROTATE,
+        TWO: THREE.TOUCH.DOLLY_PAN,
+      }}
       onStart={() => { userInteracting.current = true; isAnimating.current = false; }}
       onEnd={() => { userInteracting.current = false; }}
     />

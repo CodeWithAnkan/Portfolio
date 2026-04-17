@@ -43,6 +43,13 @@ const Card = styled('div', {
     padding: '$6',
     maxHeight: '90vh',
   },
+
+  '@sm': {
+    padding: '$4',
+    maxWidth: '95vw',
+    maxHeight: '92vh',
+    borderRadius: '$md',
+  },
 });
 
 const CloseBtn = styled('button', {
@@ -67,6 +74,14 @@ const CloseBtn = styled('button', {
     color: '$text',
     borderColor: '$accent',
   },
+
+  '@sm': {
+    width: '44px',
+    height: '44px',
+    fontSize: '20px',
+    top: '$3',
+    right: '$3',
+  },
 });
 
 const Title = styled('h2', {
@@ -79,6 +94,10 @@ const Title = styled('h2', {
 
   '@md': {
     fontSize: '$xl',
+  },
+
+  '@sm': {
+    fontSize: '$lg',
   },
 });
 

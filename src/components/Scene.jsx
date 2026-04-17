@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { CAMERA_DEFAULTS } from '../utils/constants';
 import StarField from './StarField';
 import OrbitRings from './OrbitRings';
@@ -11,8 +11,18 @@ import AsteroidBelt from './AsteroidBelt';
 import GalaxyParticleSystem from './GalaxyParticleSystem';
 import { CanvasLoader } from './Loader';
 import ResumeComet from './ResumeComet';
-import { GALAXIES, SCHOOL_NODES, COLLEGE_NODES, ORBIT_RADII_SCHOOL, ORBIT_RADII_COLLEGE } from '../data/nodes';
+import { GALAXIES, SCHOOL_NODES, COLLEGE_NODES, CORE_IDENTITY, ORBIT_RADII_SCHOOL, ORBIT_RADII_COLLEGE, GALAXY_REFS } from '../data/nodes';
 import useNodeStore from '../hooks/useNodeStore';
+import usePerformance from '../hooks/usePerformance';
+
+// Invisible FPS sampler — runs inside the R3F render loop with zero visual cost
+function FPSMonitor() {
+  const reportFrame = usePerformance((s) => s.reportFrame);
+  useFrame((_, delta) => {
+    reportFrame(delta);
+  });
+  return null;
+}
 
 function renderNode(node, galaxyId) {
   switch (node.type) {
@@ -49,8 +59,26 @@ function SolarSystemInner({ activeGalaxy, selfId, nodes, orbitRadii }) {
   );
 }
 
+function GalaxyOrbitGroup({ children }) {
+  const groupRef = React.useRef();
+  const activeGalaxy = useNodeStore((s) => s.activeGalaxy);
+  
+  useFrame((state, delta) => {
+    if (groupRef.current) {
+        // Slowly revolve the entire galaxy cluster around the Core Identity Star!
+        // We pause the orbit gracefully when a galaxy is actively selected so the camera can securely lock onto it.
+        if (!activeGalaxy) {
+            groupRef.current.rotation.y += delta * 0.015;
+        }
+    }
+  });
+
+  return <group ref={groupRef}>{children}</group>;
+}
+
 export default function Scene() {
   const activeGalaxy = useNodeStore((s) => s.activeGalaxy);
+  const isMobile = usePerformance((s) => s.isMobile);
 
   return (
     <Canvas
@@ -60,9 +88,9 @@ export default function Scene() {
         near: CAMERA_DEFAULTS.near,
         far: 1000, // Extend far plane to see faraway galaxies
       }}
-      dpr={[1, 2]}
+      dpr={isMobile ? [1, 1] : [1, 2]}
       gl={{
-        antialias: true,
+        antialias: !isMobile, // Disable antialiasing on mobile to save GPU
         alpha: false,
         powerPreference: 'high-performance',
       }}
@@ -81,13 +109,22 @@ export default function Scene() {
       <Suspense fallback={<CanvasLoader />}>
         <StarField />
 
+        {/* The Supermassive Core Identity Star */}
+        <group position={[0, 0, 0]}>
+            <SunNode node={CORE_IDENTITY} galaxyId={null} />
+        </group>
+
         {/* Render Galaxies */}
-        {GALAXIES.map((galaxy) => (
-          <group key={galaxy.id}>
-            <GalaxyParticleSystem galaxy={galaxy} />
-            
-            {/* Render the inner solar systems perfectly aligned inside their parent galaxy's coordinate space */}
-            <group position={galaxy.position}>
+        <GalaxyOrbitGroup>
+            {GALAXIES.map((galaxy) => (
+            <group 
+                key={galaxy.id}
+                position={galaxy.position}
+                ref={(el) => { if (el) GALAXY_REFS[galaxy.id] = el; }}
+            >
+                <GalaxyParticleSystem galaxy={galaxy} />
+                
+                {/* Render the inner solar systems perfectly aligned inside their parent galaxy's coordinate space */}
                 {galaxy.id === 'school' && (
                     <SolarSystemInner activeGalaxy={activeGalaxy} selfId="school" nodes={SCHOOL_NODES} orbitRadii={ORBIT_RADII_SCHOOL} />
                 )}
@@ -95,11 +132,12 @@ export default function Scene() {
                     <SolarSystemInner activeGalaxy={activeGalaxy} selfId="college" nodes={COLLEGE_NODES} orbitRadii={ORBIT_RADII_COLLEGE} />
                 )}
             </group>
-          </group>
-        ))}
+            ))}
+        </GalaxyOrbitGroup>
 
         <CameraController />
         <ResumeComet />
+        <FPSMonitor />
         <fog attach="fog" args={['#030014', 80, 500]} />
       </Suspense>
     </Canvas>

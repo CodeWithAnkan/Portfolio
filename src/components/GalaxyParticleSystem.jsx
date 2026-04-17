@@ -4,6 +4,8 @@ import { Points, PointMaterial, Html } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
 import useNodeStore from '../hooks/useNodeStore';
+import useAudio from '../hooks/useAudio';
+import usePerformance from '../hooks/usePerformance';
 
 export default function GalaxyParticleSystem({ galaxy }) {
   const ref = useRef();
@@ -11,6 +13,7 @@ export default function GalaxyParticleSystem({ galaxy }) {
   const activeGalaxy = useNodeStore((s) => s.activeGalaxy);
   const setActiveGalaxy = useNodeStore((s) => s.setActiveGalaxy);
   const [hovered, setHovered] = useState(false);
+  const perfConfig = usePerformance((s) => s.config);
 
   // Fade out macro particles if gazing into the system
   const isTarget = activeGalaxy === galaxy.id;
@@ -22,7 +25,7 @@ export default function GalaxyParticleSystem({ galaxy }) {
     switch (galaxy.type) {
       case 'whirlpool': // The user's exact Pinwheel/Grand-Design reference
         return {
-          count: 50000,
+          count: Math.floor(50000 * perfConfig.particleMultiplier),
           radius: 35,
           coreRadius: 6,
           coreRatio: 0.25,
@@ -36,11 +39,11 @@ export default function GalaxyParticleSystem({ galaxy }) {
           outsideColor: '#2563eb', // Blue fringes
           tiltX: Math.PI * 0.25,
           tiltZ: -Math.PI * 0.1,
-          size: 0.08
+          size: perfConfig.particleMultiplier < 1 ? 0.12 : 0.08
         };
       case 'andromeda':
         return {
-          count: 70000,          
+          count: Math.floor(70000 * perfConfig.particleMultiplier),
           radius: 45,            
           coreRadius: 8,
           coreRatio: 0.4,       
@@ -54,12 +57,12 @@ export default function GalaxyParticleSystem({ galaxy }) {
           outsideColor: '#00d4ff', 
           tiltX: Math.PI * 0.45,  
           tiltZ: 0,
-          size: 0.1
+          size: perfConfig.particleMultiplier < 1 ? 0.14 : 0.1
         };
       case 'milkyway':
       default:
         return {
-          count: 60000,
+          count: Math.floor(60000 * perfConfig.particleMultiplier),
           radius: 40,
           coreRadius: 7,
           coreRatio: 0.3,       
@@ -73,10 +76,10 @@ export default function GalaxyParticleSystem({ galaxy }) {
           outsideColor: '#1d4ed8', // Deep blue galactic rim
           tiltX: -Math.PI * 0.08,
           tiltZ: Math.PI * 0.12,
-          size: 0.08
+          size: perfConfig.particleMultiplier < 1 ? 0.12 : 0.08
         };
     }
-  }, [galaxy.type]);
+  }, [galaxy.type, perfConfig.particleMultiplier]);
 
   const [positions, colors] = useMemo(() => {
     const pos = new Float32Array(params.count * 3);
@@ -173,7 +176,7 @@ export default function GalaxyParticleSystem({ galaxy }) {
 
   return (
     <group 
-      position={galaxy.position} 
+      position={[0, 0, 0]}
       onClick={(e) => {
         if (!activeGalaxy && !galaxy.isComingSoon) {
           e.stopPropagation();
@@ -185,9 +188,9 @@ export default function GalaxyParticleSystem({ galaxy }) {
       }}
       onPointerOver={(e) => {
         if (!activeGalaxy) {
-          e.stopPropagation();
-          setHovered(true);
-          document.body.style.cursor = 'pointer';
+            e.stopPropagation();
+            setHovered(true);
+            document.body.style.cursor = 'pointer';
         }
       }}
       onPointerOut={() => {

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import { GALAXIES, SCHOOL_NODES, COLLEGE_NODES } from '../data/nodes';
+import { GALAXIES, SCHOOL_NODES, COLLEGE_NODES, CORE_IDENTITY } from '../data/nodes';
 
-const ALL_NODES = [...SCHOOL_NODES, ...COLLEGE_NODES];
+const ALL_NODES = [...SCHOOL_NODES, ...COLLEGE_NODES, CORE_IDENTITY];
 
 const useNodeStore = create((set, get) => ({
   activeGalaxy: null, // 'school', 'college', 'corporate'
@@ -26,7 +26,7 @@ const useNodeStore = create((set, get) => ({
   setActiveNode: (nodeId, galaxyId) => {
     const node = ALL_NODES.find((n) => n.id === nodeId) || null;
     if (node) {
-      window.location.hash = `${galaxyId}/${node.hashId}`;
+      window.location.hash = galaxyId ? `${galaxyId}/${node.hashId}` : `universe/${node.hashId}`;
     }
     set({ activeNode: node, detailOpen: !!node, activeGalaxy: galaxyId });
   },
@@ -35,6 +35,8 @@ const useNodeStore = create((set, get) => ({
     const { activeGalaxy } = get();
     if (activeGalaxy) {
       window.location.hash = `galaxy_${activeGalaxy}`;
+    } else {
+      window.history.replaceState(null, '', window.location.pathname);
     }
     set({ activeNode: null, detailOpen: false });
   },
@@ -57,7 +59,7 @@ const useNodeStore = create((set, get) => ({
         const [gal, nodeId] = hash.split('/');
         const node = ALL_NODES.find((n) => n.hashId === nodeId);
         if (node) {
-          set({ activeGalaxy: gal, activeNode: node, detailOpen: true });
+          set({ activeGalaxy: gal === 'universe' ? null : gal, activeNode: node, detailOpen: true });
         }
       }
     }

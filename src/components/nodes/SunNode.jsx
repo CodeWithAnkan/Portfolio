@@ -1,7 +1,10 @@
 import React, { useRef, useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
+import { Html } from '@react-three/drei';
+import { motion, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
 import useNodeStore from '../../hooks/useNodeStore';
+import usePerformance from '../../hooks/usePerformance';
 import NodeLabel from '../NodeLabel';
 
 // Custom sun surface shader for turbulent, fiery look
@@ -119,6 +122,8 @@ export default function SunNode({ node, galaxyId }) {
   const activeNode = useNodeStore((s) => s.activeNode);
   const isActive = activeNode?.id === node.id;
 
+  const perfConfig = usePerformance((s) => s.config);
+
   const uniforms = useRef({ uTime: { value: 0 } });
 
   const shaderMat = useMemo(
@@ -138,6 +143,8 @@ export default function SunNode({ node, galaxyId }) {
     { scale: 4.0, opacity: 0.025, color: '#ffcc44' },
     { scale: 5.0, opacity: 0.015, color: '#ffe066' },
   ], []);
+
+  const activeGalaxy = useNodeStore((s) => s.activeGalaxy);
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
@@ -168,11 +175,11 @@ export default function SunNode({ node, galaxyId }) {
           document.body.style.cursor = 'auto';
         }}
       >
-        <sphereGeometry args={[node.size, 64, 64]} />
+        <sphereGeometry args={[node.size, perfConfig.sphereSegments, perfConfig.sphereSegments]} />
       </mesh>
 
-      {/* Multiple glow layers for realistic aura */}
-      {glowLayers.map((layer, i) => (
+      {/* Multiple glow layers for realistic aura (scaled by performance tier) */}
+      {glowLayers.slice(0, perfConfig.glowLayers).map((layer, i) => (
         <mesh key={i} scale={layer.scale}>
           <sphereGeometry args={[1, 32, 32]} />
           <meshBasicMaterial
@@ -200,7 +207,39 @@ export default function SunNode({ node, galaxyId }) {
         decay={2}
       />
 
-      <NodeLabel node={node} hovered={hovered} isActive={isActive} offsetY={node.size + 1.0} />
+      {/* Glassmorphism About Me Tooltip for Core Star */}
+      {node.id === 'core_identity' && galaxyId === null && (
+        <Html center position={[0, node.size + 8, 0]} zIndexRange={[100, 0]} style={{ pointerEvents: 'none' }}>
+           <AnimatePresence>
+               {hovered && !activeNode && (
+                   <motion.div
+                       initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                       animate={{ opacity: 1, y: 0, scale: 1 }}
+                       exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.15 } }}
+                       transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                       style={{
+                            background: 'linear-gradient(145deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 100%)',
+                            backdropFilter: 'blur(24px)',
+                            WebkitBackdropFilter: 'blur(24px)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            borderRadius: '16px',
+                            padding: '16px 28px',
+                            textAlign: 'center',
+                            minWidth: 'max-content',
+                            boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
+                       }}
+                   >
+                        <h4 style={{ margin: 0, color: '#ffffff', fontFamily: 'Inter, sans-serif', fontSize: '18px', fontWeight: 600, letterSpacing: '0.5px' }}>About Me</h4>
+                        <p style={{ margin: 0, color: 'rgba(255,255,255,0.6)', fontFamily: 'Fira Code, monospace', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>Full-Stack • AI/ML</p>
+                   </motion.div>
+               )}
+           </AnimatePresence>
+        </Html>
+      )}
+
+      {node.id !== 'core_identity' && (
+        <NodeLabel node={node} hovered={hovered} isActive={isActive} offsetY={node.size + 1.0} />
+      )}
     </group>
   );
 }

@@ -3,15 +3,18 @@ import { useFrame } from '@react-three/fiber';
 import { Points, PointMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 import { STAR_COUNT } from '../utils/constants';
+import usePerformance from '../hooks/usePerformance';
 
 export default function StarField() {
   const ref = useRef();
+  const perfConfig = usePerformance((s) => s.config);
+  const scaledCount = Math.floor(STAR_COUNT * perfConfig.starMultiplier);
 
   const [positions, sizes] = useMemo(() => {
-    const pos = new Float32Array(STAR_COUNT * 3);
-    const sz = new Float32Array(STAR_COUNT);
+    const pos = new Float32Array(scaledCount * 3);
+    const sz = new Float32Array(scaledCount);
 
-    for (let i = 0; i < STAR_COUNT; i++) {
+    for (let i = 0; i < scaledCount; i++) {
       const r = 40 + Math.random() * 800; // Stretch radius massive
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
@@ -25,7 +28,7 @@ export default function StarField() {
     }
 
     return [pos, sz];
-  }, []);
+  }, [scaledCount]);
 
   useFrame((_, delta) => {
     if (ref.current) {
@@ -50,12 +53,16 @@ export default function StarField() {
       </Points>
 
       {/* Warm accent stars layer */}
-      <BrightStars count={400} color="#ffd6a5" minSize={0.4} maxSize={1.0} radiusMin={40} radiusMax={900} glitter={false} />
-      <BrightStars count={400} color="#ffeaa7" minSize={0.5} maxSize={1.3} radiusMin={40} radiusMax={900} glitter={true} />
+      <BrightStars count={Math.floor(400 * perfConfig.starMultiplier)} color="#ffd6a5" minSize={0.4} maxSize={1.0} radiusMin={40} radiusMax={900} glitter={false} />
+      {perfConfig.enableGlitter && (
+        <BrightStars count={Math.floor(400 * perfConfig.starMultiplier)} color="#ffeaa7" minSize={0.5} maxSize={1.3} radiusMin={40} radiusMax={900} glitter={true} />
+      )}
 
       {/* Blue accent stars layer */}
-      <BrightStars count={300} color="#93c5fd" minSize={0.35} maxSize={0.9} radiusMin={40} radiusMax={900} glitter={false} />
-      <BrightStars count={300} color="#a29bfe" minSize={0.4} maxSize={1.1} radiusMin={40} radiusMax={900} glitter={true} />
+      <BrightStars count={Math.floor(300 * perfConfig.starMultiplier)} color="#93c5fd" minSize={0.35} maxSize={0.9} radiusMin={40} radiusMax={900} glitter={false} />
+      {perfConfig.enableGlitter && (
+        <BrightStars count={Math.floor(300 * perfConfig.starMultiplier)} color="#a29bfe" minSize={0.4} maxSize={1.1} radiusMin={40} radiusMax={900} glitter={true} />
+      )}
     </group>
   );
 }

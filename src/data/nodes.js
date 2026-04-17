@@ -3,7 +3,7 @@ export const GALAXIES = [
     id: 'school',
     title: 'School Life',
     subtitle: 'The Foundation',
-    position: [-130, 0, 0],   // Pushed slightly wider to accommodate large galaxy radii
+    position: [-100, 0, 60],   // Pushed wide and forward
     type: 'whirlpool',
     color: '#f472b6',
   },
@@ -11,7 +11,7 @@ export const GALAXIES = [
     id: 'college',
     title: 'College Life',
     subtitle: 'The Shift',
-    position: [0, 0, 0],
+    position: [0, 0, -120],    // Back center
     type: 'milkyway',
     color: '#fbbf24',
   },
@@ -19,12 +19,34 @@ export const GALAXIES = [
     id: 'corporate',
     title: 'Corporate Life',
     subtitle: 'Coming Soon',
-    position: [130, 0, 0],
+    position: [100, 0, 60],    // Pushed wide and forward
     type: 'andromeda',
     color: '#00d4ff',
     isComingSoon: true,
   },
 ];
+
+export const CORE_IDENTITY = {
+  id: 'core_identity',
+  title: 'Ankan Chatterjee',
+  subtitle: 'Full-Stack · AI/ML',
+  type: 'sun',
+  hashId: 'core',
+  orbitRadius: 0,
+  orbitSpeed: 0,
+  orbitOffset: 0,
+  yOffset: 0,
+  size: 14.5, // Massive Red Giant
+  color: '#b91c1c', // Deep crimson red core
+  accentColor: '#fca5a5',
+  techTags: ['REACT', 'REACT NATIVE', 'PYTHON', 'AI/ML', 'NODE.JS', 'JAVA'],
+  metrics: ['System Architect', 'Algorithm Engineer', 'Product Builder'],
+  story: {
+    challenge: 'To constantly bridge the gap between heavy AI backend processing and buttery-smooth frontend user experiences.',
+    solution: 'Mastered both the rigorous logic of Machine Learning models and the creative engineering of modern client applications.',
+    impact: 'Capable of engineering entire product lifecycles end-to-end—from the SQL database up to the interactive 3D UI.',
+  },
+};
 
 export const SCHOOL_NODES = [
   {
@@ -286,6 +308,8 @@ export const COLLEGE_NODES = [
 
 export const ORBIT_RADII_SCHOOL = [8.0, 11.0, 14.0, 17.0];
 export const ORBIT_RADII_COLLEGE = [10.0, 13.5, 17.0, 20.5, 24.0];
+
+export const GALAXY_REFS = {};
 
 export const SOCIAL_LINKS = {
   github: { label: 'GitHub', url: 'https://github.com/CodeWithAnkan', icon: 'github' },

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Html } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import useAudio from '../hooks/useAudio';
+
 const containerStyle = {
   display: 'flex',
   flexDirection: 'column',
@@ -15,7 +17,6 @@ const containerStyle = {
   top: 0,
   left: 0,
   zIndex: 200,
-  pointerEvents: 'none',
 };
 
 const titleStyle = {
@@ -43,9 +44,24 @@ const percentStyle = {
   letterSpacing: '1px',
 };
 
+const enterBtnStyle = {
+  marginTop: '20px',
+  padding: '10px 24px',
+  background: 'rgba(124, 58, 237, 0.1)',
+  border: '1px solid rgba(124, 58, 237, 0.4)',
+  borderRadius: '4px',
+  color: '#e2e8f0',
+  fontFamily: "'JetBrains Mono', monospace",
+  fontSize: '12px',
+  letterSpacing: '2px',
+  cursor: 'pointer',
+  transition: 'all 0.3s ease',
+};
+
 function LoaderScreen() {
   const [visible, setVisible] = useState(true);
   const [progress, setProgress] = useState(0);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     // Simulate a quick load sequence since we have no heavy assets
@@ -55,11 +71,16 @@ function LoaderScreen() {
       setProgress(Math.min(100, frame * 8));
       if (frame >= 13) {
         clearInterval(interval);
-        setTimeout(() => setVisible(false), 400);
+        setLoaded(true);
       }
     }, 80);
     return () => clearInterval(interval);
   }, []);
+
+  const handleEnter = () => {
+      useAudio.getState().init();
+      setVisible(false);
+  };
 
   return (
     <AnimatePresence>
@@ -70,20 +91,38 @@ function LoaderScreen() {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.8, ease: 'easeInOut' }}
         >
-          <div style={titleStyle}>ANKAN</div>
-          <div style={barContainer}>
-            <motion.div
-              style={{
-                height: '100%',
-                background: 'linear-gradient(90deg, #7c3aed, #a78bfa)',
-                borderRadius: '1px',
-              }}
-              initial={{ width: '0%' }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.2 }}
-            />
+          <div style={titleStyle}>ANKAN CHATTERJEE</div>
+          
+          <div style={{ height: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              {!loaded ? (
+                  <>
+                      <div style={barContainer}>
+                        <motion.div
+                          style={{
+                            height: '100%',
+                            background: 'linear-gradient(90deg, #7c3aed, #a78bfa)',
+                            borderRadius: '1px',
+                          }}
+                          initial={{ width: '0%' }}
+                          animate={{ width: `${progress}%` }}
+                          transition={{ duration: 0.2 }}
+                        />
+                      </div>
+                      <div style={{ ...percentStyle, marginTop: '10px' }}>{Math.round(progress)}%</div>
+                  </>
+              ) : (
+                  <motion.button
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      style={enterBtnStyle}
+                      onClick={handleEnter}
+                      onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(124, 58, 237, 0.3)'; }}
+                      onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(124, 58, 237, 0.1)'; }}
+                  >
+                      ENTER UNIVERSE
+                  </motion.button>
+              )}
           </div>
-          <div style={percentStyle}>{Math.round(progress)}%</div>
         </motion.div>
       )}
     </AnimatePresence>
