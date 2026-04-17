@@ -4,7 +4,6 @@ import { Points, PointMaterial, Html } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
 import useNodeStore from '../hooks/useNodeStore';
-import useAudio from '../hooks/useAudio';
 import usePerformance from '../hooks/usePerformance';
 
 export default function GalaxyParticleSystem({ galaxy }) {
