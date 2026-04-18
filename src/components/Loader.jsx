@@ -3,6 +3,7 @@ import { Html } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import useAudio from '../hooks/useAudio';
+import usePerformance from '../hooks/usePerformance';
 
 const containerStyle = {
   display: 'flex',
@@ -58,10 +59,22 @@ const enterBtnStyle = {
   transition: 'all 0.3s ease',
 };
 
+const mobileNoteStyle = {
+  fontFamily: "'Inter', sans-serif",
+  fontSize: '11px',
+  color: '#64748b',
+  textAlign: 'center',
+  maxWidth: '280px',
+  marginTop: '30px',
+  lineHeight: '1.6',
+  opacity: 0.8,
+};
+
 function LoaderScreen() {
   const [visible, setVisible] = useState(true);
   const [progress, setProgress] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  const isMobile = usePerformance((s) => s.isMobile);
 
   useEffect(() => {
     // Simulate a quick load sequence since we have no heavy assets
@@ -123,6 +136,18 @@ function LoaderScreen() {
                   </motion.button>
               )}
           </div>
+          
+          {isMobile && (
+            <motion.div 
+               style={mobileNoteStyle}
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               transition={{ delay: 1, duration: 1 }}
+            >
+              For the most immersive experience, <br/>
+              we recommend opening this on a desktop browser.
+            </motion.div>
+          )}
         </motion.div>
       )}
     </AnimatePresence>
