@@ -16,6 +16,8 @@ export default function App() {
       <Scene />
       <HUD />
       <NodeDetail />
+      <Analytics />
+      <SpeedInsights />
     </>
   );
 }
