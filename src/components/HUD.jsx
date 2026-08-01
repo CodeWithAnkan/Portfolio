@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { styled, keyframes } from '../theme';
-import { GALAXIES, SCHOOL_NODES, COLLEGE_NODES, SOCIAL_LINKS } from '../data/nodes';
+import { GALAXIES, SCHOOL_NODES, COLLEGE_NODES, CORPORATE_NODES, SOCIAL_LINKS } from '../data/nodes';
 import useNodeStore from '../hooks/useNodeStore';
 import useAudio from '../hooks/useAudio';
 import usePerformance from '../hooks/usePerformance';
@@ -476,7 +476,7 @@ export default function HUD() {
   const getNodesList = () => {
       if (activeGalaxy === 'school') return SCHOOL_NODES;
       if (activeGalaxy === 'college') return COLLEGE_NODES;
-      if (activeGalaxy === 'corporate') return [];
+      if (activeGalaxy === 'corporate') return CORPORATE_NODES;
       return [];
   };
 

@@ -18,11 +18,10 @@ export const GALAXIES = [
   {
     id: 'corporate',
     title: 'Corporate Life',
-    subtitle: 'Coming Soon',
+    subtitle: 'BNY',
     position: [100, 0, 60],    // Pushed wide and forward
     type: 'andromeda',
     color: '#00d4ff',
-    isComingSoon: true,
   },
 ];
 
@@ -306,8 +305,132 @@ export const COLLEGE_NODES = [
   },
 ];
 
+export const CORPORATE_NODES = [
+  {
+    id: 'bny_sun',
+    title: 'BNY',
+    subtitle: 'Summer Internship · May - July',
+    type: 'sun',
+    hashId: 'bny',
+    orbitRadius: 0,
+    orbitSpeed: 0,
+    orbitOffset: 0,
+    yOffset: 0,
+    size: 2.7,
+    color: '#0a2e5c',
+    accentColor: '#00d4ff',
+    techTags: ['SPRING BOOT', 'DB2', 'SQL', 'MICROSERVICES'],
+    metrics: ['Summer Intern', 'Billing Platform'],
+    story: {
+      challenge:
+        'Designing and building a critical enterprise microservice from scratch to manage billing processes for financial clients.',
+      solution:
+        'Developed a robust Java-based backend from the ground up using Spring Boot, integrating with IBM DB2 for transactional storage and data integrity.',
+      impact:
+        'Successfully delivered a production-ready billing service with full security, dynamic search, and high test coverage.',
+    },
+  },
+  {
+    id: 'bny_billing',
+    title: 'Billing Microservice',
+    subtitle: 'Cascading CRUD & Business Logic',
+    type: 'sphere',
+    hashId: 'corp_billing',
+    orbitRadius: 9.0,
+    orbitSpeed: 0.22,
+    orbitOffset: 0.8,
+    yOffset: 0.15,
+    size: 1.1,
+    color: '#1e293b',
+    accentColor: '#38bdf8',
+    techTags: ['SPRING BOOT', 'DB2', 'CRUD', 'CASCADING LOGIC'],
+    metrics: ['99 Prod Classes', 'Hierarchical Termination'],
+    story: {
+      challenge:
+        'Handling complex, multi-level billing hierarchies where modifications or terminations must propagate cleanly across linked accounts without data corruption.',
+      solution:
+        'Engineered a complete CRUD lifecycle with transactional cascading terminations, dependency validation checks, and state-transition logic.',
+      impact:
+        'Guaranteed referential and business data integrity across BNY\'s hierarchical billing database tables, preventing orphan accounts.',
+    },
+  },
+  {
+    id: 'bny_security',
+    title: 'Layered Security',
+    subtitle: 'API Hardening & Authorization',
+    type: 'sphere',
+    hashId: 'corp_security',
+    orbitRadius: 12.5,
+    orbitSpeed: 0.12,
+    orbitOffset: 1.8,
+    yOffset: -0.1,
+    size: 1.0,
+    color: '#0f172a',
+    accentColor: '#10b981',
+    techTags: ['JWT', 'CERTIFICATES', 'INPUT SANITIZATION', 'SQL INJECTION'],
+    metrics: ['Hardened API', 'Zero Vulnerabilities'],
+    story: {
+      challenge:
+        'Protecting the core billing API from unauthorized access, entitlement breaches, and common web application attacks.',
+      solution:
+        'Implemented JWT token validation with custom expirations, certificate-based client entitlement checks, parameterized SQL queries, and input sanitization.',
+      impact:
+        'Mitigated SQL injection and session hijack risks, securing sensitive client financial data and complying with BNY security policies.',
+    },
+  },
+  {
+    id: 'bny_search',
+    title: 'Dynamic Query Engine',
+    subtitle: 'Multi-Field Parameterized SQL',
+    type: 'sphere',
+    hashId: 'corp_search',
+    orbitRadius: 16.0,
+    orbitSpeed: 0.28,
+    orbitOffset: 2.8,
+    yOffset: 0.2,
+    size: 1.05,
+    color: '#111827',
+    accentColor: '#fbbf24',
+    techTags: ['SQL', 'PARAMETERIZED QUERIES', 'SPRING JDBC', 'SEARCH FRAMEWORK'],
+    metrics: ['Multi-Field Search', 'Pluggable Interfaces'],
+    story: {
+      challenge:
+        'Providing flexible, fast search options across many optional transaction attributes without writing hundreds of redundant queries.',
+      solution:
+        'Designed a dynamic multi-field search engine utilizing parameterized SQL builder patterns, standardizing API response structures across modules.',
+      impact:
+        'Delivered a clean, reusable search framework that dramatically reduced boilerplate code and improved query response times.',
+    },
+  },
+  {
+    id: 'bny_quality',
+    title: 'Quality & Optimization',
+    subtitle: 'Unit Testing & Refactoring',
+    type: 'sphere',
+    hashId: 'corp_quality',
+    orbitRadius: 20.0,
+    orbitSpeed: 0.17,
+    orbitOffset: 4.2,
+    yOffset: -0.2,
+    size: 1.15,
+    color: '#311042',
+    accentColor: '#a855f7',
+    techTags: ['JUNIT 5', 'MOCKITO', 'SONARQUBE', 'REFACTORING'],
+    metrics: ['90%+ Code Coverage', '950+ Unit Tests', '<1% Duplication'],
+    story: {
+      challenge:
+        'Ensuring absolute stability of the financial billing microservice and keeping code smell and duplication indicators low in a strict review environment.',
+      solution:
+        'Authored 950+ unit tests across 86 test classes, resolved 80+ SonarQube hotspots, and decoupled core business rules into pluggable interfaces.',
+      impact:
+        'Achieved over 90% code coverage, resolved cognitive complexity issues, and brought project duplication below 1% for robust maintainability.',
+    },
+  },
+];
+
 export const ORBIT_RADII_SCHOOL = [8.0, 11.0, 14.0, 17.0];
 export const ORBIT_RADII_COLLEGE = [10.0, 13.5, 17.0, 20.5, 24.0];
+export const ORBIT_RADII_CORPORATE = [9.0, 12.5, 16.0, 20.0];
 
 export const GALAXY_REFS = {};
 

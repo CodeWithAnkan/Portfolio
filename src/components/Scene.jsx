@@ -11,7 +11,7 @@ import AsteroidBelt from './AsteroidBelt';
 import GalaxyParticleSystem from './GalaxyParticleSystem';
 import { CanvasLoader } from './Loader';
 import ResumeComet from './ResumeComet';
-import { GALAXIES, SCHOOL_NODES, COLLEGE_NODES, CORE_IDENTITY, ORBIT_RADII_SCHOOL, ORBIT_RADII_COLLEGE, GALAXY_REFS } from '../data/nodes';
+import { GALAXIES, SCHOOL_NODES, COLLEGE_NODES, CORPORATE_NODES, CORE_IDENTITY, ORBIT_RADII_SCHOOL, ORBIT_RADII_COLLEGE, ORBIT_RADII_CORPORATE, GALAXY_REFS } from '../data/nodes';
 import useNodeStore from '../hooks/useNodeStore';
 import usePerformance from '../hooks/usePerformance';
 
@@ -130,6 +130,9 @@ export default function Scene() {
                 )}
                 {galaxy.id === 'college' && (
                     <SolarSystemInner activeGalaxy={activeGalaxy} selfId="college" nodes={COLLEGE_NODES} orbitRadii={ORBIT_RADII_COLLEGE} />
+                )}
+                {galaxy.id === 'corporate' && (
+                    <SolarSystemInner activeGalaxy={activeGalaxy} selfId="corporate" nodes={CORPORATE_NODES} orbitRadii={ORBIT_RADII_CORPORATE} />
                 )}
             </group>
             ))}

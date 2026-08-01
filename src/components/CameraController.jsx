@@ -3,7 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import useNodeStore from '../hooks/useNodeStore';
-import { GALAXIES, SCHOOL_NODES, COLLEGE_NODES, GALAXY_REFS } from '../data/nodes';
+import { GALAXIES, SCHOOL_NODES, COLLEGE_NODES, CORPORATE_NODES, GALAXY_REFS } from '../data/nodes';
 import { CAMERA_DEFAULTS, CAMERA_FOCUS_OFFSET, CAMERA_LERP_SPEED, AUTO_ROTATE_SPEED } from '../utils/constants';
 import usePerformance from '../hooks/usePerformance';
 
@@ -11,7 +11,7 @@ const targetPos = new THREE.Vector3();
 const targetLookAt = new THREE.Vector3();
 const currentLookAt = new THREE.Vector3(0, 0, 0);
 
-const ALL_NODES = [...SCHOOL_NODES, ...COLLEGE_NODES];
+const ALL_NODES = [...SCHOOL_NODES, ...COLLEGE_NODES, ...CORPORATE_NODES];
 
 export default function CameraController() {
   const controlsRef = useRef();

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import { GALAXIES, SCHOOL_NODES, COLLEGE_NODES, CORE_IDENTITY } from '../data/nodes';
+import { GALAXIES, SCHOOL_NODES, COLLEGE_NODES, CORPORATE_NODES, CORE_IDENTITY } from '../data/nodes';
 
-const ALL_NODES = [...SCHOOL_NODES, ...COLLEGE_NODES, CORE_IDENTITY];
+const ALL_NODES = [...SCHOOL_NODES, ...COLLEGE_NODES, ...CORPORATE_NODES, CORE_IDENTITY];
 
 const useNodeStore = create((set, get) => ({
   activeGalaxy: null, // 'school', 'college', 'corporate'
@@ -13,7 +13,6 @@ const useNodeStore = create((set, get) => ({
   setResumeAnimState: (state) => set({ resumeAnimState: state }),
 
   setActiveGalaxy: (galaxyId) => {
-    if (galaxyId === 'corporate') return; // Handled separately for "coming soon"
     window.location.hash = `galaxy_${galaxyId}`;
     set({ activeGalaxy: galaxyId, activeNode: null, detailOpen: false });
   },
