@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Html } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import useAudio from '../hooks/useAudio';
 import usePerformance from '../hooks/usePerformance';
 
 const containerStyle = {
@@ -91,7 +90,6 @@ function LoaderScreen() {
   }, []);
 
   const handleEnter = () => {
-      useAudio.getState().init();
       setVisible(false);
   };
 
