@@ -49,7 +49,7 @@ const initSynth = () => {
 }
 
 const playComet = () => {
-    if (!audioCtx) return;
+    if (!audioCtx || useAudio.getState().isMuted) return;
     // Synthesis of a massive swoosh (filtered white noise)
     const bufferSize = audioCtx.sampleRate * 5.0; 
     const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
@@ -83,9 +83,12 @@ const playComet = () => {
 
 const useAudio = create((set, get) => ({
     isInitialized: false,
-    isMuted: false,
+    isMuted: true,
     init: () => {
         initSynth();
+        if (get().isMuted && audioCtx) {
+            audioCtx.suspend();
+        }
         set({ isInitialized: true });
     },
     toggleMute: () => {
